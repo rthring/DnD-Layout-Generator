@@ -9,6 +9,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
@@ -37,17 +38,16 @@ public class Gui<toReturn> extends Application {
         primaryStage = assignedStage;
         /*Border Panes have  top, left, right, center and bottom sections */
         root = setUpRoot();
-        descriptionPane = createPopUp(675, 450, "Example Description of something");
+        descriptionPane = createPopUp(472, 200, "");
         Scene scene = new Scene(root, 720, 480);
-        primaryStage.setTitle("Hello GUI Demo");
+        primaryStage.setTitle("Assignment 4");
         primaryStage.setScene(scene);
         primaryStage.show();
-
     }
 
     private BorderPane setUpRoot() {
         BorderPane temp = new BorderPane();
-        temp.setTop(new Label("The name or identifier of the thing below"));
+        temp.setTop(new Label("Chambers and Passages"));
         Node buttons = setButtonPanel();  //separate method for the left section
         temp.setRight(buttons);
         ObservableList<String> hydraList = FXCollections.observableArrayList(theController.getNameList());
@@ -62,7 +62,8 @@ public class Gui<toReturn> extends Application {
         temp.setPrefWidth(150);
         temp.setPrefHeight(150);
         temp.setOnMouseClicked((MouseEvent event)->{
-            System.out.println("clicked on " + temp.getSelectionModel().getSelectedItem());
+            changeDescriptionText(theController.getDescription(temp.getSelectionModel().getSelectedIndex()));
+            setComboBox(temp.getSelectionModel().getSelectedIndex());
         });
 
         return temp;
@@ -98,11 +99,16 @@ public class Gui<toReturn> extends Application {
         Button hideButton = createButton("Hide Description", "-fx-background-color: #FFFFFF; ");
         hideButton.setOnAction((ActionEvent event) -> {
             descriptionPane.hide();
-            changeDescriptionText(theController.getNewDescription());
         });
         temp.getChildren().add(hideButton);
+        ComboBox doors = new ComboBox();
+        doors.setItems(FXCollections.observableArrayList(theController.getChamberDoorStrings(0)));
+        doors.getSelectionModel().selectFirst();
+        doors.setOnMouseClicked((MouseEvent event)->{
+            changeDescriptionText(theController.getDoorDescription(doors.getSelectionModel().getSelectedItem().toString()));
+        });
+        temp.getChildren().add(doors);
         return temp;
-
     }
 
     /* an example of a popup area that can be set to nearly any
@@ -112,10 +118,11 @@ public class Gui<toReturn> extends Application {
         Popup popup = new Popup();
         popup.setX(x);
         popup.setY(y);
+        popup.setWidth(40);
         TextArea textA = new TextArea(text);
         popup.getContent().addAll(textA);
         textA.setStyle(" -fx-background-color: white;");
-        textA.setMinWidth(80);
+        textA.setMaxWidth(432);
         textA.setMinHeight(50);
         return popup;
     }
@@ -137,9 +144,29 @@ public class Gui<toReturn> extends Application {
                 TextArea temp = (TextArea) t;
                 temp.setText(text);
             }
-
         }
-
+    }
+    
+    private void setComboBox (int index) {
+        String labels[];
+        ObservableList<Node> list = root.getChildren();
+        if (index < 5) {
+            labels = theController.getChamberDoorStrings(index);
+        } else {
+            labels = theController.getPassageDoorStrings(index - 5);
+        }
+        for (Node t : list) {
+            if (t instanceof VBox) {
+                ObservableList<Node> list2 = ((VBox) t).getChildren();
+                for (Node p : list2) {
+                    if (p instanceof ComboBox) {
+                        ComboBox temp = (ComboBox) p;
+                        temp.setItems(FXCollections.observableArrayList(labels));
+                        temp.getSelectionModel().selectFirst();
+                    }
+                }
+            }
+        }
     }
 
 //    private GridPane createGridPanel() {

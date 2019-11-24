@@ -288,7 +288,7 @@ public class Chamber extends Space {
         String description = "";
         int numStairs = myStairs.size();
         for (int i = 0; i < numStairs; i++) {
-            description += "Stairs " + (i + 1) + " description " + myStairs.get(i).getDescription() + "\n";
+            description += "Stairs " + (i + 1) + " description: " + myStairs.get(i).getDescription() + "\n";
         }
         return description;
     }

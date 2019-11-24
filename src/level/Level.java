@@ -193,6 +193,7 @@ public class Level {
         doorTwo.setSpace(connection);
         passages.add(connection);
     }
+    
 
     /**
      * Print out the generated level.
@@ -238,10 +239,21 @@ public class Level {
         }
     }
     
+    public ArrayList <Door> getDoorListChamber () {
+        return doors;
+    }
+    
+    public ArrayList <Door> getDoorListPassage () {
+        return doors;
+    }
+    
     public ArrayList <Chamber> getChambers () {
         return chambers;
     }
     public ArrayList <Passage> getPassages () {
         return passages;
+    }
+    public ArrayList <Door> getDoors () {
+        return doors;
     }
 }
