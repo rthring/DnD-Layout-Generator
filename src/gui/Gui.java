@@ -104,7 +104,7 @@ public class Gui<toReturn> extends Application {
         ComboBox doors = new ComboBox();
         doors.setItems(FXCollections.observableArrayList(theController.getChamberDoorStrings(0)));
         doors.getSelectionModel().selectFirst();
-        doors.setOnMouseClicked((MouseEvent event)->{
+        doors.setOnAction((event2) -> {
             changeDescriptionText(theController.getDoorDescription(doors.getSelectionModel().getSelectedItem().toString()));
         });
         temp.getChildren().add(doors);
@@ -161,8 +161,13 @@ public class Gui<toReturn> extends Application {
                 for (Node p : list2) {
                     if (p instanceof ComboBox) {
                         ComboBox temp = (ComboBox) p;
+                        temp.setOnAction((event2) -> {
+                        });
                         temp.setItems(FXCollections.observableArrayList(labels));
                         temp.getSelectionModel().selectFirst();
+                        temp.setOnAction((event2) -> {
+                            changeDescriptionText(theController.getDoorDescription(temp.getSelectionModel().getSelectedItem().toString()));
+                        });
                     }
                 }
             }
