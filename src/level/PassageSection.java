@@ -1,7 +1,7 @@
 package level;
 import dnd.models.Monster;
 import dnd.models.Treasure;
-public class PassageSection {
+public class PassageSection implements java.io.Serializable {
     /**
      * Holds monster if there is one in this section.
      */

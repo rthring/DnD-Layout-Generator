@@ -3,7 +3,13 @@ package gui;
 import level.Level;
 import level.Chamber;
 import level.Passage;
+import level.Space;
 import level.Door;
+
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
 import dnd.models.Monster;
@@ -18,6 +24,32 @@ public class Controller {
         myLevel = new Level();
         myGui = theGui;
         myLevel.createLevel();
+    }
+    
+    public void save() {
+        try {
+            FileOutputStream fileOut = new FileOutputStream("level.ser");
+            ObjectOutputStream out = new ObjectOutputStream(fileOut);
+            out.writeObject(myLevel);
+            out.close();
+            fileOut.close();
+            System.out.println("Saved to level.ser");
+        } catch (Exception e) {
+            System.out.println("Save failed");
+        }
+    }
+    
+    public void load() {
+        try {
+            FileInputStream fileIn = new FileInputStream("level.ser");
+            ObjectInputStream in = new ObjectInputStream(fileIn);
+            myLevel = (Level) in.readObject();
+            in.close();
+            fileIn.close();
+            System.out.println("Loaded level.ser");
+        } catch (Exception e) {
+            System.out.println("Load failed");
+        }
     }
     
     private Monster monsterByDescription(String description) {
@@ -195,12 +227,30 @@ public class Controller {
     
     public String getDoorDescription(String door) {
         int index;
+        Door d;
+        String description;
+        ArrayList<Space> spaces;
         index = (int) (door.charAt(5) - '0');
         if (door.length() == 7) {
             index = index * 10;
             index += (int) (door.charAt(6) - '0');
         }
-        return myLevel.getDoors().get(index).getDescription();
+        d = myLevel.getDoors().get(index);
+        description = d.getDescription();
+        spaces = d.getSpaces();
+        for (Space s : spaces) {
+            for (Chamber c : myLevel.getChambers()) {
+                if (s == c) {
+                    description += "\nConnected to " + myLevel.getChambers().indexOf(c) + " Chamber";
+                }
+            }
+            for (Passage p : myLevel.getPassages()) {
+                if (s == p) {
+                    description += "\nConnected to " + (myLevel.getPassages().indexOf(p) + 5) + " Passage";
+                }
+            }
+        }
+        return description;
     }
     
     public void chamberRemoveMonstersAndTreasures(int index) {

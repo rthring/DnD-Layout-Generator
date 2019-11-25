@@ -1,7 +1,7 @@
 package gui;
 import javafx.collections.FXCollections;
 
-import java.io.File;
+import java.util.ArrayList;
 
 import javafx.application.Application;
 import javafx.collections.ObservableList;
@@ -22,7 +22,6 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.*;
-import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
@@ -48,7 +47,7 @@ public class Gui<toReturn> extends Application {
         primaryStage = assignedStage;
         /*Border Panes have  top, left, right, center and bottom sections */
         root = setUpRoot();
-        descriptionPane = createPopUp(472, 120, "");
+        descriptionPane = createPopUp(472, 124, "");
         Scene scene = new Scene(root, 720, 480);
         primaryStage.setTitle("Level Graphical User Interface");
         primaryStage.setScene(scene);
@@ -61,7 +60,12 @@ public class Gui<toReturn> extends Application {
         MenuItem m1 = new MenuItem("Save File");
         MenuItem m2 = new MenuItem("Load File");
         m.getItems().add(m1);
-        
+        m1.setOnAction((ActionEvent event) -> {
+            theController.save();
+        });
+        m2.setOnAction((ActionEvent event) -> {
+           theController.load(); 
+        });
         m.getItems().add(m2);
         MenuBar mb = new MenuBar();
         mb.getMenus().add(m);
@@ -70,8 +74,6 @@ public class Gui<toReturn> extends Application {
         temp.setRight(buttons);
         ObservableList<String> spaceList = FXCollections.observableArrayList(theController.getNameList());
         temp.setLeft(createListView(spaceList));
-        GridPane room = new ChamberView(4,4);
-        temp.setCenter(room);
         Button editButton = createButton("Edit", "-fx-background-color: #ff0000; -fx-background-radius: 10, 10, 10, 10;");
         editButton.setOnAction((ActionEvent event) -> {
             editStage.show();
@@ -193,6 +195,11 @@ public class Gui<toReturn> extends Application {
         return temp;
     }
 
+    public void newListView(ArrayList<String> names) {
+        ObservableList<String> spaces = FXCollections.observableArrayList(names);
+        root.setLeft(createListView(spaces));
+    }
+    
     private Node setButtonPanel() {
         /*this method should be broken down into even smaller methods, maybe one per button*/
         VBox temp = new VBox();
@@ -395,94 +402,6 @@ public class Gui<toReturn> extends Application {
             changeDescriptionText(theController.getDescription(index + 5));
         }
     }
-
-
-//    private GridPane createGridPanel() {
-//        GridPane t = new GridPane();
-//        /*t.setStyle(
-//                "-fx-border-style: solid inside;" +
-//                        "-fx-border-width: 2;" +
-//                        "-fx-border-insets: 1;" +
-//                        "-fx-border-radius: 9;" +
-//                        "-fx-border-color: black;");*/
-//        Node[] tiles = makeTiles();  //this should be a roomview object
-//        t.add(tiles[0],0,0,1,1);
-//        t.add(tiles[1],0,1,1,1);
-//        t.add(tiles[2],0,2,1,1);
-//        t.add(tiles[3],0,3,1,1);
-//        t.add(tiles[4],1,0,1,1);
-//        t.add(tiles[5],1,1,1,1);
-//        t.add(tiles[6],1,2,1,1);
-//        t.add(tiles[7],1,3,1,1);
-//        t.add(tiles[8],2,0,1,1);
-//        t.add(tiles[9],2,1,1,1);
-//        t.add(tiles[10],2,2,1,1);
-//        t.add(tiles[11],2,3,1,1);
-//        t.add(tiles[12],3,0,1,1);
-//        t.add(tiles[13],3,1,1,1);
-//        t.add(tiles[14],3,2,1,1);
-//        t.add(tiles[15],3,3,1,1);
-//        //t.setHgap(0);
-//        //t.setVgap(0);
-//          return t;
-//    }
-
-//    private TilePane createTilePanel() {
-//        TilePane t = new TilePane();
-//        t.setStyle(
-//                "-fx-border-style: solid inside;" +
-//                        "-fx-border-width: 2;" +
-//                        "-fx-border-insets: 1;" +
-//                        "-fx-border-radius: 9;" +
-//                        "-fx-border-color: black;");
-//        Node[] tiles = makeTiles();  //this should be a roomview object
-//        int len = tiles.length/4; //hacky way to make a 4x4
-//        t.setOrientation(Orientation.HORIZONTAL);
-//        t.setTileAlignment(Pos.CENTER_LEFT);
-//        t.setHgap(0);
-//        t.setVgap(0);
-//        t.setPrefColumns(4);
-//        t.setMaxWidth(4 *50);  //should be getting the size from the roomview object
-//        ObservableList list = t.getChildren();
-//        list.addAll(tiles);  //write a method that adds the roomview objects
-//        return t;
-//    }
-
-//    private Node[] makeTiles() {
-//    String floor = "/res/floor.png";
-//    String treasure = "/res/tres.png";
-//
-//        Node[] toReturn = {
-//                floorFactory(floor),
-//                floorFactory(floor),
-//                floorFactory(floor),
-//                floorFactory(floor),
-//                floorFactory(floor),
-//                floorFactory(floor),
-//                floorFactory(treasure),
-//                floorFactory(floor),
-//                floorFactory(floor),
-//                floorFactory(floor),
-//                floorFactory(floor),
-//                floorFactory(floor),
-//                floorFactory(floor),
-//                floorFactory(floor),
-//                floorFactory(floor),
-//                floorFactory(floor)
-//            };
-//
-//        return toReturn;
-//}
-//
-//    public Node floorFactory(String img) {
-//        Image floor = new Image(getClass().getResourceAsStream(img));
-//        Label toReturn = new Label();
-//        ImageView imageView = new ImageView(floor);
-//        imageView.setFitWidth(50);
-//        imageView.setFitHeight(50);
-//        toReturn.setGraphic(imageView);
-//        return toReturn;
-//    }
 
     public static void main(String[] args) {
         launch(args);

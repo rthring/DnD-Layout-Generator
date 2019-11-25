@@ -2,7 +2,7 @@ package level;
 
 import java.util.ArrayList;
 
-public abstract class Space {
+public abstract class Space implements java.io.Serializable {
     /**
      *
      * @return description of Space object

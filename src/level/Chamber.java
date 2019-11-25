@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import dnd.models.Stairs;
 import dnd.models.Trap;
 
-public class Chamber extends Space {
+public class Chamber extends Space implements java.io.Serializable {
     /**
      * The contents of the Chamber.
      */

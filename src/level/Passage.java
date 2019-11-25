@@ -5,7 +5,7 @@ import dnd.models.Treasure;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Passage extends Space {
+public class Passage extends Space implements java.io.Serializable {
     /**
      * Holds all PassageSections of this passage.
      */
