@@ -18,11 +18,17 @@ public class Passage extends Space implements java.io.Serializable {
      * Holds all monsters within this passage.
      */
     private ArrayList<Monster> myMonsters;
+    /**
+     * Holds all monsters without passage sections.
+     */
     private ArrayList<Monster> roamingMonsters;
     /**
-     * Holds all monsters within this passage.
+     * Holds all treasures within this passage.
      */
     private ArrayList<Treasure> myTreasures;
+    /**
+     * Holds all treasures without passage sections.
+     */
     private ArrayList<Treasure> hiddenTreasures;
     /**
      * Stores PassageSections using Doors as keys.
@@ -93,11 +99,17 @@ public class Passage extends Space implements java.io.Serializable {
     public ArrayList<Door> getDoors() {
         return myDoors;
     }
-    
+    /**
+     * Get the list of monsters.
+     * @return list of monsters.
+     */
     public ArrayList<Monster> getMonsters() {
         return myMonsters;
     }
-    
+    /**
+     * Get the list of treasures.
+     * @return list of treasures.
+     */
     public ArrayList<Treasure> getTreasures() {
         return myTreasures;
     }
@@ -140,15 +152,29 @@ public class Passage extends Space implements java.io.Serializable {
             thePassage.get(i).addMonster(theMonster);
         }
     }
+    /**
+     * Add a monster  without a passagesection.
+     * @param theMonster to be added.
+     */
     public void addRoamingMonster(Monster theMonster) {
         roamingMonsters.add(theMonster);
     }
+    /**
+     * Add a treasure without a passagesection.
+     * @param theTreasure to be added.
+     */
     public void addHiddenTreasure(Treasure theTreasure) {
         hiddenTreasures.add(theTreasure);
     }
+    /**
+     * Remove all roaming monsters.
+     */
     public void removeMonsters() {
         roamingMonsters.clear();
     }
+    /**
+     * Remove all hidden treasures.
+     */
     public void removeTreasures() {
         hiddenTreasures.clear();
     }

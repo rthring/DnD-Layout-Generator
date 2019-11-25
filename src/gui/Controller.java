@@ -16,16 +16,26 @@ import dnd.models.Monster;
 import dnd.models.Treasure;
 
 public class Controller {
+    /**
+     * The current graphical user interface.
+     */
     private Gui myGui;
+    /**
+     * The current level being shown.
+     */
     private Level myLevel;
-    // private static int NUM_CHAMBERS = 5;
-
+    /**
+     * Initialize the controller. Generate the level.
+     * @param theGui The current graphical user interface.
+     */
     public Controller(Gui theGui){
         myLevel = new Level();
         myGui = theGui;
         myLevel.createLevel();
     }
-    
+    /**
+     * Save the current level.
+     */
     public void save() {
         try {
             FileOutputStream fileOut = new FileOutputStream("level.ser");
@@ -38,7 +48,9 @@ public class Controller {
             System.out.println("Save failed");
         }
     }
-    
+    /**
+     * Load the last saved level.
+     */
     public void load() {
         try {
             FileInputStream fileIn = new FileInputStream("level.ser");
@@ -51,7 +63,11 @@ public class Controller {
             System.out.println("Load failed");
         }
     }
-    
+    /**
+     * Create the monster based on the given description.
+     * @param description The description of the monster.
+     * @return The monster created.
+     */
     private Monster monsterByDescription(String description) {
         Monster myMonster = new Monster();
         if (description.equals("Ant, giant")) {
@@ -97,7 +113,11 @@ public class Controller {
         }
         return myMonster;
     }
-    
+    /**
+     * Create a treasure object based on the given description.
+     * @param description The description of the Treasure.
+     * @return The created treasure.
+     */
     private Treasure treasureByDescription(String description) {
         Treasure myTreasure = new Treasure();
         if (description.equals("1000 copper pieces/level")) {
@@ -119,27 +139,46 @@ public class Controller {
         }
         return myTreasure;
     }
-    
+    /**
+     * Add a monster to the chamber given by index using the monsters description.
+     * @param index The index of the chamber.
+     * @param description The description of the monster.
+     */
     public void chamberAddMonster(int index, String description) {
         Chamber c = myLevel.getChambers().get(index);
         c.addMonster(monsterByDescription(description));
     }
-    
+    /**
+     * Add a treasure to the chamber given by the index using the treasures description.
+     * @param index The index of the Chamber.
+     * @param description The description of the Treasure.
+     */
     public void chamberAddTreasure(int index, String description) {
         Chamber c = myLevel.getChambers().get(index);
         c.addTreasure(treasureByDescription(description));
     }
-    
+    /**
+     * Add a monster to the passage.
+     * @param index The index of the passage.
+     * @param description The description of the monster.
+     */
     public void passageAddMonster(int index, String description) {
         Passage p = myLevel.getPassages().get(index);
         p.addRoamingMonster(monsterByDescription(description));
     }
-    
+    /**
+     * Add a treasure to the passage.
+     * @param index The index of the passage.
+     * @param description The description of the treasure.
+     */
     public void passageAddTreasure(int index, String description) {
         Passage p = myLevel.getPassages().get(index);
         p.addHiddenTreasure(treasureByDescription(description));
     }
-
+    /**
+     * Determines the list of chambers and passages.
+     * @return An arraylist of strings representing the chambers and passages.
+     */
     public ArrayList<String> getNameList(){
         ArrayList<String> nameList = new ArrayList<>();
         ArrayList<Chamber> chambers = myLevel.getChambers();
@@ -153,7 +192,11 @@ public class Controller {
         }
         return nameList;
     }
-    
+    /**
+     * Get the description of the given chamber or passage.
+     * @param i The index of the chamber/passage.
+     * @return The description of the chamber or passage.
+     */
     public String getDescription(int i) {
         ArrayList<Chamber> chambers = myLevel.getChambers();
         ArrayList<Passage> passages = myLevel.getPassages();
@@ -164,7 +207,11 @@ public class Controller {
             return passages.get(i).getDescription();
         }
     }
-    
+    /**
+     * Array of monster descriptions.
+     * @param index of chamber.
+     * @return the array of monster descriptions.
+     */
     public String[] getChamberMonsterStrings(int index) {
         ArrayList<Monster> chamberMonsters = myLevel.getChambers().get(index).getMonsters();
         String[] monsterStrings = new String[chamberMonsters.size()];
@@ -173,7 +220,11 @@ public class Controller {
         }
         return monsterStrings;
     }
-    
+    /**
+     * Array of Treasure descriptions.
+     * @param index of chamber/passage.
+     * @return the array of the passage's Treasures.
+     */
     public String[] getChamberTreasureStrings(int index) {
         ArrayList<Treasure> chamberTreasures = myLevel.getChambers().get(index).getTreasures();
         String[] treasureStrings = new String[chamberTreasures.size()];
@@ -182,7 +233,11 @@ public class Controller {
         }
         return treasureStrings;
     }
-    
+    /**
+     * Array of Monster descriptions.
+     * @param index of the passage.
+     * @return the array of the passages Monsters.
+     */
     public String[] getPassageMonsterStrings(int index) {
         ArrayList<Monster> chamberMonsters = myLevel.getPassages().get(index).getMonsters();
         String[] monsterStrings = new String[chamberMonsters.size()];
@@ -191,7 +246,11 @@ public class Controller {
         }
         return monsterStrings;
     }
-    
+    /**
+     * Array of Passage's treasure descriptions.
+     * @param index of the passage.
+     * @return the array of the passages treasure descriptions.
+     */
     public String[] getPassageTreasureStrings(int index) {
         ArrayList<Treasure> chamberTreasures = myLevel.getPassages().get(index).getTreasures();
         String[] treasureStrings = new String[chamberTreasures.size()];
@@ -200,7 +259,11 @@ public class Controller {
         }
         return treasureStrings;
     }
-    
+    /**
+     * Get array of chambers door descriptions.
+     * @param index of chamber.
+     * @return array of door descriptions.
+     */
     public String[] getChamberDoorStrings(int index) {
         int doorIndex;
         ArrayList<Door> chamberDoors = myLevel.getChambers().get(index).getDoors();
@@ -212,7 +275,11 @@ public class Controller {
         }
         return doorStrings;
     }
-    
+    /**
+     * Get array of passages door descriptions.
+     * @param index of passage.
+     * @return array of door descriptions.
+     */
     public String[] getPassageDoorStrings(int index) {
         int doorIndex;
         ArrayList<Door> passageDoors = myLevel.getPassages().get(index).getDoors();
@@ -224,7 +291,11 @@ public class Controller {
         }
         return doorStrings;
     }
-    
+    /**
+     * Get the full description of a door.
+     * @param door The door selected.
+     * @return Full description of door.
+     */
     public String getDoorDescription(String door) {
         int index;
         Door d;
@@ -252,21 +323,22 @@ public class Controller {
         }
         return description;
     }
-    
+    /**
+     * Remove all monsters and treasures from chamber.
+     * @param index of chamber.
+     */
     public void chamberRemoveMonstersAndTreasures(int index) {
         Chamber c = myLevel.getChambers().get(index);
         c.removeMonsters();
         c.removeTreasures();
     }
-    
+    /**
+     * Remove all monsters and treasures from passage.
+     * @param index of passage.
+     */
     public void passageRemoveMonstersAndTreasures(int index) {
         Passage p = myLevel.getPassages().get(index);
         p.removeMonsters();
         p.removeTreasures();
     }
-
-    public void reactToButton(){
-        System.out.println("Thanks for clicking!");
-    }
-
 }

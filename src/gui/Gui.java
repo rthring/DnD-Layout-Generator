@@ -1,22 +1,16 @@
 package gui;
 import javafx.collections.FXCollections;
-
 import java.util.ArrayList;
-
 import javafx.application.Application;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.geometry.Orientation;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -26,36 +20,71 @@ import javafx.stage.Modality;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
 
-
 public class Gui<toReturn> extends Application {
-    /* Even if it is a GUI it is useful to have instance variables
-    so that you can break the processing up into smaller methods that have
-    one responsibility.
+    /**
+     * Provides access to the Level.
      */
     private Controller theController;
-    private BorderPane root;  //the root element of this GUI
+    /**
+     * The root element of this GUI.
+     */
+    private BorderPane root;
+    /**
+     * The BorderPane of the edit window.
+     */
     private BorderPane editBorder;
-    private Popup descriptionPane;
-    private Stage primaryStage;  //The stage that is passed in on initialization
-    private Stage editStage;  //The stage that is passed in on initialization
-
-    /*a call to start replaces a call to the constructor for a JavaFX GUI*/
+    /**
+     * The TextArea for the descriptions.
+     */
+    private TextArea descriptionPane;
+    /**
+     * The stage that is passed in on initialization.
+     */
+    private Stage primaryStage;
+    /**
+     * The stage for editing window.
+     */
+    private Stage editStage;
+    /**
+     * Initialize the GUI.
+     */
     @Override
     public void start(Stage assignedStage) {
-        /*Initializing instance variables */
         theController = new Controller(this);
         primaryStage = assignedStage;
-        /*Border Panes have  top, left, right, center and bottom sections */
         root = setUpRoot();
-        descriptionPane = createPopUp(472, 124, "");
+        setUpEditStage();
         Scene scene = new Scene(root, 720, 480);
         primaryStage.setTitle("Level Graphical User Interface");
         primaryStage.setScene(scene);
         primaryStage.show();
     }
-
+    /**
+     * Sets up the root for the stage.
+     * @return the root with every thing attached to it.
+     */
     private BorderPane setUpRoot() {
         BorderPane temp = new BorderPane();
+        temp.setTop(setUpMenu());
+        temp.setRight(setRightSidePanel());
+        ObservableList<String> spaceList = FXCollections.observableArrayList(theController.getNameList());
+        temp.setLeft(createListView(spaceList));
+        Button editButton = createButton("Edit", "-fx-background-color: #ff0000; -fx-background-radius: 10, 10, 10, 10;");
+        editButton.setOnAction((ActionEvent event) -> {
+            editStage.show();
+        });
+        temp.setBottom(editButton);
+        descriptionPane = new TextArea();
+        descriptionPane.setLayoutX(472);
+        descriptionPane.setLayoutY(124);
+        temp.setCenter(descriptionPane);
+        return temp;
+    }
+    /**
+     * Sets up the menubar.
+     * @return the menubar node.
+     */
+    private Node setUpMenu () {
         Menu m = new Menu("File");
         MenuItem m1 = new MenuItem("Save File");
         MenuItem m2 = new MenuItem("Load File");
@@ -69,20 +98,71 @@ public class Gui<toReturn> extends Application {
         m.getItems().add(m2);
         MenuBar mb = new MenuBar();
         mb.getMenus().add(m);
-        temp.setTop(mb);
-        Node buttons = setButtonPanel();  //separate method for the left section
-        temp.setRight(buttons);
-        ObservableList<String> spaceList = FXCollections.observableArrayList(theController.getNameList());
-        temp.setLeft(createListView(spaceList));
-        Button editButton = createButton("Edit", "-fx-background-color: #ff0000; -fx-background-radius: 10, 10, 10, 10;");
-        editButton.setOnAction((ActionEvent event) -> {
-            editStage.show();
+        return mb;
+    }
+    /**
+     * Create the list of chambers and passages on the left of the root.
+     * @param spaces The names of the chambers and passages being sent in.
+     * @return a node of the listview of the chambers and passages.
+     */
+    private Node createListView(ObservableList<String> spaces){
+        ListView temp = new ListView<String>(spaces);
+        temp.setPrefWidth(150);
+        temp.setPrefHeight(150);
+        temp.setOnMouseClicked((MouseEvent event)->{
+            changeDescriptionText(theController.getDescription(temp.getSelectionModel().getSelectedIndex()));
+            setComboBox(temp.getSelectionModel().getSelectedIndex());
+            setMonsters(temp.getSelectionModel().getSelectedIndex());
+            setTreasures(temp.getSelectionModel().getSelectedIndex());
         });
-        temp.setBottom(editButton);
+        return temp;
+    }
+    /**
+     * Create a new listview based on the given names. Used when loading a level.
+     * @param names The names of the chambers and passages.
+     */
+    public void newListView(ArrayList<String> names) {
+        ObservableList<String> spaces = FXCollections.observableArrayList(names);
+        root.setLeft(createListView(spaces));
+    }
+    /**
+     * Set up the button panel for the right side of the stage.
+     * @return a node of the button panel.
+     */
+    private Node setRightSidePanel() {
+        VBox temp = new VBox();
+        temp.setStyle("-fx-padding: 10;" +
+                "-fx-border-style: solid inside;" +
+                "-fx-border-width: 2;" +
+                "-fx-border-insets: 5;" +
+                "-fx-border-radius: 5;" +
+                "-fx-border-color: blue;");
+        ComboBox doors = new ComboBox();
+        doors.setOnAction((event2) -> {
+            changeDescriptionText(theController.getDoorDescription(doors.getSelectionModel().getSelectedItem().toString()));
+        });
+        temp.getChildren().add(doors);
+        return temp;
+    }
+    /**
+     * Set up the stage for where editing of chambers and passages can occur.
+     */
+    private void setUpEditStage () {
         editStage = new Stage();
         editStage.initModality(Modality.APPLICATION_MODAL);
         editStage.initOwner(primaryStage);
         editBorder = new BorderPane();
+        editBorder.setTop(setUpEditTop());
+        editBorder.setCenter(setUpEditCenter());
+        editBorder.setBottom(setUpEditBottom());
+        Scene editScene = new Scene(editBorder, 500, 130);
+        editStage.setScene(editScene);
+    }
+    /**
+     * Set up the top of the editing stage.
+     * @return the node for the top of the editing stage.
+     */
+    private Node setUpEditTop () {
         HBox editTop = new HBox();
         Button addMonsterButton = createButton("Add monster", "-fx-background-color: #ff0000; -fx-background-radius: 10, 10, 10, 10;");
         addMonsterButton.setOnAction((ActionEvent event) -> {
@@ -110,9 +190,14 @@ public class Gui<toReturn> extends Application {
             editStage.hide();
         });
         editTop.getChildren().add(saveButton);
-        editBorder.setTop(editTop);
+        return editTop;
+    }
+    /**
+     * Set up the center of the editing stage.
+     * @return the node for the center of the editing stage.
+     */
+    private Node setUpEditCenter () {
         HBox editCenter = new HBox();
-        
         VBox editCenterLeft = new VBox();
         Label curMonsterLabel = new Label("Current Monsters");
         editCenterLeft.getChildren().add(curMonsterLabel);
@@ -127,10 +212,14 @@ public class Gui<toReturn> extends Application {
         curTreasures.setMinWidth(130);
         editCenterRight.getChildren().add(curTreasures);
         editCenter.getChildren().add(editCenterRight);
-        
-        editBorder.setCenter(editCenter);
+        return editCenter;
+    }
+    /**
+     * Set up the bottom of the editing stage.
+     * @return the node for the bottom of the editing stage.
+     */
+    private Node setUpEditBottom () {
         HBox editBottom = new HBox();
-        
         VBox editBotLeft = new VBox();
         Label newMonsterLabel = new Label("New Monster");
         editBotLeft.getChildren().add(newMonsterLabel);
@@ -174,81 +263,14 @@ public class Gui<toReturn> extends Application {
                 "1 magic item (roll on Magic item table"};
         allTreasures.setItems(FXCollections.observableArrayList(treasures));
         editBotRight.getChildren().add(allTreasures);
-        
         editBottom.getChildren().add(editBotRight);
-        editBorder.setBottom(editBottom);
-        Scene editScene = new Scene(editBorder, 500, 130);
-        editStage.setScene(editScene);
-        return temp;
+        return editBottom;
     }
-
-    private Node createListView(ObservableList<String> spaces){
-        ListView temp = new ListView<String>(spaces);
-        temp.setPrefWidth(150);
-        temp.setPrefHeight(150);
-        temp.setOnMouseClicked((MouseEvent event)->{
-            changeDescriptionText(theController.getDescription(temp.getSelectionModel().getSelectedIndex()));
-            setComboBox(temp.getSelectionModel().getSelectedIndex());
-            setMonsters(temp.getSelectionModel().getSelectedIndex());
-            setTreasures(temp.getSelectionModel().getSelectedIndex());
-        });
-        return temp;
-    }
-
-    public void newListView(ArrayList<String> names) {
-        ObservableList<String> spaces = FXCollections.observableArrayList(names);
-        root.setLeft(createListView(spaces));
-    }
-    
-    private Node setButtonPanel() {
-        /*this method should be broken down into even smaller methods, maybe one per button*/
-        VBox temp = new VBox();
-        temp.setStyle("-fx-padding: 10;" +
-                "-fx-border-style: solid inside;" +
-                "-fx-border-width: 2;" +
-                "-fx-border-insets: 5;" +
-                "-fx-border-radius: 5;" +
-                "-fx-border-color: blue;");
-        /*This button listener is only changing the view and doesn't need
-        to contact the controller
-         */
-        Button showButton = createButton("Show Description", "-fx-background-color: #FFFFFF; ");
-        showButton.setOnAction((ActionEvent event) -> {
-            descriptionPane.show(primaryStage);
-        });
-        temp.getChildren().add(showButton);
-        /*this button listener is an example of getting data from the controller */
-        Button hideButton = createButton("Hide Description", "-fx-background-color: #FFFFFF; ");
-        hideButton.setOnAction((ActionEvent event) -> {
-            descriptionPane.hide();
-        });
-        temp.getChildren().add(hideButton);
-        ComboBox doors = new ComboBox();
-        doors.setOnAction((event2) -> {
-            changeDescriptionText(theController.getDoorDescription(doors.getSelectionModel().getSelectedItem().toString()));
-        });
-        temp.getChildren().add(doors);
-        return temp;
-    }
-
-    /* an example of a popup area that can be set to nearly any
-    type of node
-     */
-    private Popup createPopUp(int x, int y, String text) {
-        Popup popup = new Popup();
-        popup.setX(x);
-        popup.setY(y);
-        popup.setWidth(40);
-        TextArea textA = new TextArea(text);
-        popup.getContent().addAll(textA);
-        textA.setStyle(" -fx-background-color: white;");
-        textA.setMaxWidth(432);
-        textA.setMinHeight(436);
-        return popup;
-    }
-
-    /*generic button creation method ensure that all buttons will have a
-    similar style and means that the style only need to be in one place
+    /**
+     * Button creation method to ensure all buttons are similar and their format is in only one place.
+     * @param text The text that goes on the button.
+     * @param format The format of the button.
+     * @return The created button.
      */
     private Button createButton(String text, String format) {
         Button btn = new Button();
@@ -256,17 +278,17 @@ public class Gui<toReturn> extends Application {
         btn.setStyle("");
         return btn;
     }
-
+    /**
+     * Change the description of the textarea.
+     * @param text The text that the description is supposed to be changed to.
+     */
     private void changeDescriptionText(String text) {
-        ObservableList<Node> list = descriptionPane.getContent();
-        for (Node t : list) {
-            if (t instanceof TextArea) {
-                TextArea temp = (TextArea) t;
-                temp.setText(text);
-            }
-        }
+        descriptionPane.setText(text);
     }
-    
+    /**
+     * Set the editing window current monsters combobox with the monsters of the currently selected Chamber/Passage.
+     * @param index The index of the Chamber/Passage
+     */
     private void setMonsters(int index) {
         String labels[];
         ComboBox monsters;
@@ -279,7 +301,10 @@ public class Gui<toReturn> extends Application {
         monsters = (ComboBox) list.get(1);
         monsters.setItems(FXCollections.observableArrayList(labels));
     }
-    
+    /**
+     * Set the editing window current treasures combobox with the treasures of the currently selected Chamber/Passage.
+     * @param index The index of the Chamber/Passage
+     */
     private void setTreasures(int index) {
         String labels[];
         ComboBox treasures;
@@ -292,7 +317,10 @@ public class Gui<toReturn> extends Application {
         treasures = (ComboBox) list.get(1);
         treasures.setItems(FXCollections.observableArrayList(labels));
     }
-    
+    /**
+     * Set the Door combobox full of the selected Chamber/Passage's Doors.
+     * @param index
+     */
     private void setComboBox (int index) {
         String labels[];
         ObservableList<Node> list = root.getChildren();
@@ -318,7 +346,9 @@ public class Gui<toReturn> extends Application {
             }
         }
     }
-    
+    /**
+     * Add the selected monster to the chamber/passages current monsters.
+     */
     private void addMonster() {
         String monster;
         int index;
@@ -330,7 +360,9 @@ public class Gui<toReturn> extends Application {
         ComboBox curMonsters = (ComboBox)((VBox)((HBox)editBorder.getCenter()).getChildren().get(0)).getChildren().get(1);
         curMonsters.getItems().add(monster);
     }
-    
+    /**
+     * Add the selected treasure to the chamber/passages current treasures.
+     */
     private void addTreasure() {
         String treasure;
         try {
@@ -341,7 +373,9 @@ public class Gui<toReturn> extends Application {
         ComboBox curTreasures = (ComboBox)((VBox)((HBox)editBorder.getCenter()).getChildren().get(1)).getChildren().get(1);
         curTreasures.getItems().add(treasure);
     }
-    
+    /**
+     * Delete the selected monster from the current monsters.
+     */
     private void delMonster() {
         int index;
         ComboBox monsters = (ComboBox)((VBox)((HBox)editBorder.getCenter()).getChildren().get(0)).getChildren().get(1);
@@ -351,7 +385,9 @@ public class Gui<toReturn> extends Application {
         }
         monsters.getItems().remove(index);
     }
-    
+    /**
+     * Delete the selected treasure from the current treasures.
+     */
     private void delTreasure() {
         int index;
         ComboBox treasures = (ComboBox)((VBox)((HBox)editBorder.getCenter()).getChildren().get(1)).getChildren().get(1);
@@ -361,48 +397,47 @@ public class Gui<toReturn> extends Application {
         }
         treasures.getItems().remove(index);
     }
-    
+    /**
+     * Save the changes made to the current monsters and treasures.
+     */
     private void saveChanges() {
         String description;
-        int size;
+        ComboBox monsters = (ComboBox)((VBox)((HBox)editBorder.getCenter()).getChildren().get(0)).getChildren().get(1);
+        ComboBox treasures = (ComboBox)((VBox)((HBox)editBorder.getCenter()).getChildren().get(1)).getChildren().get(1);
+        int size = monsters.getItems().size();
         int index = ((ListView)root.getLeft()).getSelectionModel().getSelectedIndex();
         if (index == -1) {
             return;
         }
         if (index < 5) {
             theController.chamberRemoveMonstersAndTreasures(index);
-            ComboBox monsters = (ComboBox)((VBox)((HBox)editBorder.getCenter()).getChildren().get(0)).getChildren().get(1);
-            size = monsters.getItems().size();
             for (int i = 0; i < size; i++) {
                 description = monsters.getItems().get(i).toString();
                 theController.chamberAddMonster(index, description);
             }
-            ComboBox treasures = (ComboBox)((VBox)((HBox)editBorder.getCenter()).getChildren().get(1)).getChildren().get(1);
             size = treasures.getItems().size();
             for (int i = 0; i < size; i++) {
                 description = treasures.getItems().get(i).toString();
                 theController.chamberAddTreasure(index, description);
             }
-            changeDescriptionText(theController.getDescription(index));
         } else {
-            index = index - 5;
-            theController.passageRemoveMonstersAndTreasures(index);
-            ComboBox monsters = (ComboBox)((VBox)((HBox)editBorder.getCenter()).getChildren().get(0)).getChildren().get(1);
-            size = monsters.getItems().size();
+            theController.passageRemoveMonstersAndTreasures(index - 5);
             for (int i = 0; i < size; i++) {
                 description = monsters.getItems().get(i).toString();
-                theController.passageAddMonster(index, description);
+                theController.passageAddMonster(index - 5, description);
             }
-            ComboBox treasures = (ComboBox)((VBox)((HBox)editBorder.getCenter()).getChildren().get(1)).getChildren().get(1);
             size = treasures.getItems().size();
             for (int i = 0; i < size; i++) {
                 description = treasures.getItems().get(i).toString();
-                theController.passageAddTreasure(index, description);
+                theController.passageAddTreasure(index - 5, description);
             }
-            changeDescriptionText(theController.getDescription(index + 5));
         }
+        changeDescriptionText(theController.getDescription(index));
     }
-
+    /**
+     * Launch
+     * @param args An array of command line arguments.
+     */
     public static void main(String[] args) {
         launch(args);
     }

@@ -40,7 +40,9 @@ public class Level implements java.io.Serializable {
         matches = new HashMap<>();
         finalMatches = new HashMap<>();
     }
-    
+    /**
+     * Create the level.
+     */
     public void createLevel() {
         this.createChambers(5);
         this.findTargets();
@@ -57,7 +59,6 @@ public class Level implements java.io.Serializable {
             chambers.add(new Chamber());
         }
     }
-
     /**
      * Finds a chamber target for each door.
      */
@@ -71,7 +72,6 @@ public class Level implements java.io.Serializable {
             }
         }
     }
-
     /**
      *
      * @param index of the current chamber.
@@ -82,7 +82,6 @@ public class Level implements java.io.Serializable {
         targets.remove(index);
         return targets;
     }
-
     /**
      *
      * @param size The largest number to be generated
@@ -92,7 +91,6 @@ public class Level implements java.io.Serializable {
         Random rand = new Random();
         return rand.nextInt(size);
     }
-
     /**
      * Make door to door pairs for connections.
      */
@@ -130,7 +128,6 @@ public class Level implements java.io.Serializable {
             }
         }
     }
-
     /**
      * Make a list for each door of all of its connecting doors.
      */
@@ -153,7 +150,6 @@ public class Level implements java.io.Serializable {
             }
         }
     }
-
     /**
      * Make passage connections for each door connection.
      */
@@ -175,7 +171,6 @@ public class Level implements java.io.Serializable {
             }
         }
     }
-
     /**
      * Connect 2 doors with a passage.
      * @param doorOne first door to be connected.
@@ -193,8 +188,6 @@ public class Level implements java.io.Serializable {
         doorTwo.setSpace(connection);
         passages.add(connection);
     }
-    
-
     /**
      * Print out the generated level.
      */
@@ -204,7 +197,6 @@ public class Level implements java.io.Serializable {
         printChambers(chamberMap, doorMap);
         printPassages(doorMap);
     }
-
     /**
      * Print the given chambers and their doors. Map them to their maps.
      * @param chamberMap Maps chamber to id numbers.
@@ -223,7 +215,6 @@ public class Level implements java.io.Serializable {
             System.out.println("\n");
         }
     }
-
     /**
      * Print out all passages and their connecting doors.
      * @param doorMap Maps doors to id numbers.
@@ -238,21 +229,24 @@ public class Level implements java.io.Serializable {
             System.out.println(p.getDescription());
         }
     }
-    
-    public ArrayList <Door> getDoorListChamber () {
-        return doors;
-    }
-    
-    public ArrayList <Door> getDoorListPassage () {
-        return doors;
-    }
-    
+    /**
+     * Get all chambers.
+     * @return all chambers.
+     */
     public ArrayList <Chamber> getChambers () {
         return chambers;
     }
+    /**
+     * Get all passages.
+     * @return all passages.
+     */
     public ArrayList <Passage> getPassages () {
         return passages;
     }
+    /**
+     * Get all doors.
+     * @return all doors.
+     */
     public ArrayList <Door> getDoors () {
         return doors;
     }

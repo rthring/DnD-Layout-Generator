@@ -40,9 +40,6 @@ public class Chamber extends Space implements java.io.Serializable {
      * List of the traps in the Chamber.
      */
     private ArrayList<Trap> myTraps;
-    /* note:  Some of these methods would normally be protected or private, but because we
-    don't want to dictate how you set up your packages we need them to be public
-    for the purposes of running an automated test suite (junit) on your code.  */
     /**
      * Default constructor for the Chamber.
      * Assigns random shape and contents to Chamber.
@@ -319,17 +316,17 @@ public class Chamber extends Space implements java.io.Serializable {
      * @return a string describing the contents of the Chamber.
      */
     private String getChamberContentsString() {
-        String description = "Contents: " + myContents.getDescription() + "\n";
+        String description = "";
         if (myTreasures.size() > 0) {
             description += getTreasureString();
         }
         if (myMonsters.size() > 0) {
             description += getMonsterString();
         }
-        if (myContents.getDescription().contains("trap")) {
+        if (myTraps.size() > 0) {
             description += getTrapString();
         }
-        if (myContents.getDescription().contains("stairs")) {
+        if (myStairs.size() > 0) {
             description += getStairsString();
         }
         return description;
@@ -345,11 +342,15 @@ public class Chamber extends Space implements java.io.Serializable {
         description += "Number of Doors: " + myDoors.size() + "\n";
         return description;
     }
-    
+    /**
+     * Remove all monsters.
+     */
     public void removeMonsters () {
         myMonsters.clear();
     }
-    
+    /**
+     * Remove all treasures.
+     */
     public void removeTreasures() {
         myTreasures.clear();
     }
