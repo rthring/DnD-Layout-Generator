@@ -3,7 +3,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 
-public class Level {
+public class Level implements java.io.Serializable {
     /**
      * Holds all chambers in the level.
      */

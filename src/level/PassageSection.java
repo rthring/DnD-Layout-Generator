@@ -1,12 +1,17 @@
 package level;
 import dnd.models.Monster;
+import dnd.models.Treasure;
 public class PassageSection {
     /**
      * Holds monster if there is one in this section.
      */
     private Monster myMonster;
     /**
-     * Holds stairs if there are stairs in this section.
+     * Holds treasure if there is one in this section.
+     */
+    private Treasure myTreasure;
+    /**
+     * Holds the door if there is a door in this section.
      */
     private Door myDoor;
     /**
@@ -21,6 +26,7 @@ public class PassageSection {
     public PassageSection(String description) {
         myDescription = description + "\n";
         myMonster = null;
+        myTreasure = null;
         myDoor = null;
     }
     /**
@@ -37,6 +43,13 @@ public class PassageSection {
     public Monster getMonster() {
         return myMonster;
     }
+    /**
+    *
+    * @return the treasure that is in this section.
+    */
+   public Treasure getTreasure() {
+       return myTreasure;
+   }
     /**
      * Connect the given door to this section.
      * @param theDoor the door that is to be connected to this Section.
@@ -55,6 +68,19 @@ public class PassageSection {
         } else {
             myMonster = theMonster;
             myDescription += "Monster description: " + myMonster.getDescription() + "\n";
+        }
+    }
+    /**
+     * Add the given treasure to this section.
+     * @param theTreasure the treasure to be added.
+     */
+    public void addTreasure(Treasure theTreasure) {
+        if (myTreasure != null) {
+            myDescription = myDescription.replace(myTreasure.getDescription(), theTreasure.getDescription());
+            myTreasure = theTreasure;
+        } else {
+            myTreasure = theTreasure;
+            myDescription += "Treasure description: " + myTreasure.getDescription() + "\n";
         }
     }
     /**

@@ -1,5 +1,7 @@
 package level;
 import dnd.models.Monster;
+import dnd.models.Treasure;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -13,6 +15,16 @@ public class Passage extends Space {
      */
     private ArrayList<Door> myDoors;
     /**
+     * Holds all monsters within this passage.
+     */
+    private ArrayList<Monster> myMonsters;
+    private ArrayList<Monster> roamingMonsters;
+    /**
+     * Holds all monsters within this passage.
+     */
+    private ArrayList<Treasure> myTreasures;
+    private ArrayList<Treasure> hiddenTreasures;
+    /**
      * Stores PassageSections using Doors as keys.
      */
     private HashMap<Door, PassageSection> doorMap;
@@ -24,6 +36,10 @@ public class Passage extends Space {
         thePassage = new ArrayList<PassageSection>();
         doorMap = new HashMap<Door, PassageSection>();
         myDoors = new ArrayList<Door>();
+        myMonsters = new ArrayList<Monster>();
+        roamingMonsters = new ArrayList<Monster>();
+        myTreasures = new ArrayList<Treasure>();
+        hiddenTreasures = new ArrayList<Treasure>();
     }
     /**
      * Add the given Section to the Passage.
@@ -34,6 +50,12 @@ public class Passage extends Space {
         if (toAdd.getDoor() != null) {
             doorMap.put(toAdd.getDoor(), toAdd);
             myDoors.add(toAdd.getDoor());
+        }
+        if (toAdd.getMonster() != null) {
+            myMonsters.add(toAdd.getMonster());
+        }
+        if (toAdd.getTreasure() != null) {
+            myTreasures.add(toAdd.getTreasure());
         }
     }
     /**
@@ -70,6 +92,14 @@ public class Passage extends Space {
     @Override
     public ArrayList<Door> getDoors() {
         return myDoors;
+    }
+    
+    public ArrayList<Monster> getMonsters() {
+        return myMonsters;
+    }
+    
+    public ArrayList<Treasure> getTreasures() {
+        return myTreasures;
     }
     /**
      * Get the Door from the section at the given index.
@@ -110,6 +140,18 @@ public class Passage extends Space {
             thePassage.get(i).addMonster(theMonster);
         }
     }
+    public void addRoamingMonster(Monster theMonster) {
+        roamingMonsters.add(theMonster);
+    }
+    public void addHiddenTreasure(Treasure theTreasure) {
+        hiddenTreasures.add(theTreasure);
+    }
+    public void removeMonsters() {
+        roamingMonsters.clear();
+    }
+    public void removeTreasures() {
+        hiddenTreasures.clear();
+    }
     /**
      * Get the Monster at the given indexed Section.
      * @param i the index of the Section with the Monster.
@@ -131,6 +173,12 @@ public class Passage extends Space {
         int numSections = thePassage.size();
         for (int i = 0; i < numSections; i++) {
             description += "Passage section: " + (i + 1) + "\n" + thePassage.get(i).getDescription() + "\n";
+        }
+        for (int i = 0; i < roamingMonsters.size(); i++) {
+            description += "Monster " + (i + 1) + " description: " + roamingMonsters.get(i).getDescription() + "\n";
+        }
+        for (int i = 0; i < hiddenTreasures.size(); i++) {
+            description += "Treasure " + (i + 1) + " description: " + hiddenTreasures.get(i).getDescription() + "\n";
         }
         return description;
     }

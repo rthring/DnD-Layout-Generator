@@ -235,7 +235,7 @@ public class Chamber extends Space {
         return description;
     }
     /**
-     * Adds treasure to the Chmaber's list of treasure.
+     * Adds treasure to the Chamber's list of treasure.
      * @param theTreasure The treasure to be added to the Chamber.
      */
     public void addTreasure(Treasure theTreasure) {
@@ -258,6 +258,9 @@ public class Chamber extends Space {
         int numTreasure = myTreasures.size();
         for (int i = 0; i < numTreasure; i++) {
             t = myTreasures.get(i);
+            if (t.getContainer() == null) {
+                t.setContainer(randomInt(20));
+            }
             description += "Treasure " + (i + 1) + " description: " + t.getDescription() + "\n"
             + "Treasure container: " + t.getContainer() + "\n";
             try {
@@ -317,13 +320,16 @@ public class Chamber extends Space {
      */
     private String getChamberContentsString() {
         String description = "Contents: " + myContents.getDescription() + "\n";
-        if (myContents.getDescription().contains("treasure")) {
+        if (myTreasures.size() > 0) {
             description += getTreasureString();
-        } else if (myContents.getDescription().contains("monster")) {
+        }
+        if (myMonsters.size() > 0) {
             description += getMonsterString();
-        } else if (myContents.getDescription().contains("trap")) {
+        }
+        if (myContents.getDescription().contains("trap")) {
             description += getTrapString();
-        } else if (myContents.getDescription().contains("stairs")) {
+        }
+        if (myContents.getDescription().contains("stairs")) {
             description += getStairsString();
         }
         return description;
@@ -338,5 +344,13 @@ public class Chamber extends Space {
         description += getChamberContentsString();
         description += "Number of Doors: " + myDoors.size() + "\n";
         return description;
+    }
+    
+    public void removeMonsters () {
+        myMonsters.clear();
+    }
+    
+    public void removeTreasures() {
+        myTreasures.clear();
     }
 }
